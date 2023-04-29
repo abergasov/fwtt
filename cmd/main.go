@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"fwtt/internal/config"
 	"fwtt/internal/logger"
-	samplerRepo "fwtt/internal/repository/sampler"
+	"fwtt/internal/repository/quotes"
+	validatorRepo "fwtt/internal/repository/validator"
 	"fwtt/internal/routes"
-	samplerService "fwtt/internal/service/sampler"
+	"fwtt/internal/service/hasher"
+	"fwtt/internal/service/quoter"
+	validatorService "fwtt/internal/service/validator"
 	"fwtt/internal/storage/database"
 	"log"
 	"os"
@@ -47,13 +50,24 @@ func main() {
 	}()
 
 	appLog.Info("init repositories")
-	repo := samplerRepo.InitRepo(dbConn)
+	repoValidator := validatorRepo.NewRepository(dbConn)
+	repoQuotes := quotes.NewRepository(dbConn)
 
 	appLog.Info("init services")
-	service := samplerService.InitService(appLog, repo)
+	serviceQuotes := quoter.NewService(appLog, repoQuotes)
+	serviceHasher := hasher.NewService()
+	serviceValidator := validatorService.NewService(
+		appLog,
+		appConf.ConfigValidator.ChallengeDifficulty,
+		appConf.ConfigValidator.ChallengeMaxAllowed,
+		appConf.ConfigValidator.ChallengeTTL,
+		serviceHasher,
+		repoValidator,
+	)
+	defer serviceValidator.Stop()
 
 	appLog.Info("init http service")
-	appHTTPServer := routes.InitAppRouter(appLog, service, fmt.Sprintf(":%d", appConf.AppPort))
+	appHTTPServer := routes.InitAppRouter(appLog, serviceQuotes, serviceValidator, fmt.Sprintf(":%d", appConf.AppPort))
 	defer func() {
 		if err = appHTTPServer.Stop(); err != nil {
 			appLog.Fatal("unable to stop http service", err)
@@ -71,13 +85,13 @@ func main() {
 	<-c // This blocks the main thread until an interrupt is received
 }
 
-func getDBConnect(log logger.AppLogger, cnf *config.DBConf, migratesFolder string) (*database.DBConnect, error) {
+func getDBConnect(appLog logger.AppLogger, cnf *config.DBConf, migratesFolder string) (*database.DBConnect, error) {
 	for i := 0; i < 5; i++ {
 		dbConnect, err := database.InitDBConnect(cnf, migratesFolder)
 		if err == nil {
 			return dbConnect, nil
 		}
-		log.Error("can't connect to db", err, zap.Int("attempt", i))
+		appLog.Error("can't connect to db", err, zap.Int("attempt", i))
 		time.Sleep(time.Duration(i) * time.Second * 5)
 	}
 	return nil, fmt.Errorf("can't connect to db")
