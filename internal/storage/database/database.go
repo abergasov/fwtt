@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"go_project_template/internal/config"
+	"fwtt/internal/config"
 	"time"
 
 	"github.com/jmoiron/sqlx"

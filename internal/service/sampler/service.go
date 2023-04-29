@@ -1,8 +1,8 @@
 package sampler
 
 import (
-	"go_project_template/internal/logger"
-	"go_project_template/internal/repository/sampler"
+	"fwtt/internal/logger"
+	"fwtt/internal/repository/sampler"
 
 	"go.uber.org/zap"
 )
