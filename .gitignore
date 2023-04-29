@@ -5,3 +5,4 @@ configs/common.env
 configs/app_conf_docker.yml
 bin
 cover.out
+client/node_modules

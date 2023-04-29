@@ -48,7 +48,22 @@ func NewService(log logger.AppLogger, difficulty, maxAllowed uint32, maxDuration
 	if err := srv.loadState(); err != nil {
 		srv.log.Fatal("failed to load state", err)
 	}
+	go srv.emulateStateObserver()
 	return srv
+}
+
+// emulateStateObserver is a helper function that changes challengesAlgo every 5 seconds
+func (s *Service) emulateStateObserver() {
+	for range time.NewTicker(5 * time.Second).C {
+		s.challengesMU.Lock()
+		if s.challengesAlgo == entites.SHA256 {
+			s.challengesAlgo = entites.Scrypt
+		} else {
+			s.challengesAlgo = entites.SHA256
+		}
+		s.log.Info("changed challenges algo", zap.String("algo", s.challengesAlgo))
+		s.challengesMU.Unlock()
+	}
 }
 
 func (s *Service) loadState() error {

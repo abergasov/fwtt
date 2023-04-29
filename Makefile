@@ -21,10 +21,6 @@ ifndef GOLANGCI_LINT
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 endif
 
-abi: ## generate abi struct
-	abigen --abi internal/service/web3/approver/erc20.abi.json --pkg approver --type Erc20 --out erc_20.go
-	mv erc_20.go internal/service/web3/approver/
-
 gogen: ## generate code
 	${info generate code...}
 	go generate ./internal...
@@ -61,9 +57,13 @@ run: ## Runs binary local with environment in docker
 	${info Run app containered}
 	GIT_HASH=${FILE_HASH} docker compose -p ${PROJECT_NAME} up --build
 
+client: ## Runs client
+	${info Run client}
+	cd client && npm run start
+
 migrate_new: ## Create new migration
 	migrate create -ext sql -dir migrations -seq data
 
 
-.PHONY: help install-lint test gogen lint stop dev_up build run init_repo migrate_new
+.PHONY: help install-lint test gogen lint stop dev_up build run init_repo migrate_new client
 .DEFAULT_GOAL := help
