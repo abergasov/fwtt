@@ -82,7 +82,7 @@ func TestService_SetDifficulty(t *testing.T) {
 		challengeHash, nonce := getHashSHA256(serviceHasher, challengeParamsBefore.Difficulty, challengeParamsBefore.Challenges[0])
 		require.True(t, serviceValidator.VerifyChallenge(nonce, challengeParamsBefore.Challenges[0], challengeHash))
 		// when
-		require.NoError(t, serviceValidator.SetDifficulty(challengeParamsBefore.Difficulty+1, entites.Scrypt))
+		require.NoError(t, serviceValidator.SetDifficulty(challengeParamsBefore.Difficulty, entites.Scrypt))
 		// then
 		challengeParamsAfter := serviceValidator.GetChallenges(1)
 		challengeHashAfter, nonceAfter := getHashScrypt(serviceHasher, challengeParamsAfter.Difficulty, challengeParamsAfter.Challenges[0])

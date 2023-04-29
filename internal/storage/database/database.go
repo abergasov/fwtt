@@ -36,8 +36,10 @@ func InitDBConnect(cnf *config.DBConf, migratesFolder string) (*DBConnect, error
 		return nil, fmt.Errorf("error ping to db: %w", err)
 	}
 	conn := &DBConnect{db}
-	if err = conn.migrate(migratesFolder); err != nil && err != migrate.ErrNoChange {
-		return nil, fmt.Errorf("error migrate db: %w", err)
+	if migratesFolder != "" {
+		if err = conn.migrate(migratesFolder); err != nil && err != migrate.ErrNoChange {
+			return nil, fmt.Errorf("error migrate db: %w", err)
+		}
 	}
 	return conn, nil
 }
