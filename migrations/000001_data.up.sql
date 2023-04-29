@@ -1,12 +1,12 @@
-create table users
+create table challenges
 (
-    u_id         uuid
-        constraint users_pk
+    challenge   varchar
+        constraint challenges_pk
             primary key,
-    created_at   timestamp,
-    updated_at   timestamp,
-    user_version int default 1,
-    email        varchar,
-    user_locale  varchar,
-    user_name    varchar
+    valid_till  integer,
+    difficulty  integer,
+    max_allowed integer,
+    used        integer,
+    hash_algo   varchar,
+    hash        varchar
 );

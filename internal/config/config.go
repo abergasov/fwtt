@@ -5,24 +5,22 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
 
 type AppConfig struct {
-	AppPort        int       `yaml:"app_port"`
-	MigratesFolder string    `yaml:"migrates_folder"`
-	ConfigDB       DBConf    `yaml:"conf_db"`
-	ConfigGraph    GraphConf `yaml:"conf_graph"`
+	AppPort         int           `yaml:"app_port"`
+	MigratesFolder  string        `yaml:"migrates_folder"`
+	ConfigValidator ValidatorConf `yaml:"conf_validator"`
+	ConfigDB        DBConf        `yaml:"conf_db"`
 }
 
-type GraphConf struct {
-	Address        string `yaml:"address" json:"address,omitempty"`
-	Port           string `yaml:"port" json:"port,omitempty"`
-	User           string `yaml:"user" json:"user,omitempty"`
-	Pass           string `yaml:"pass" json:"pass,omitempty"`
-	DBName         string `yaml:"db_name" json:"db_name,omitempty"`
-	MaxConnections int    `yaml:"max_connections" json:"max_connections,omitempty"`
+type ValidatorConf struct {
+	ChallengeTTL        time.Duration `yaml:"challenge_ttl"`
+	ChallengeMaxAllowed uint32        `yaml:"challenge_max_allowed"`
+	ChallengeDifficulty uint32        `yaml:"challenge_difficulty"`
 }
 
 type DBConf struct {

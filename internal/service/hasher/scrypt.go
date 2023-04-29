@@ -3,19 +3,13 @@ package hasher
 import (
 	"bytes"
 	"encoding/binary"
+	"fwtt/internal/entites"
 
 	"golang.org/x/crypto/scrypt"
 )
 
-type ScryptConfig struct {
-	N      int `json:"n"`
-	R      int `json:"r"`
-	P      int `json:"p"`
-	KeyLen int `json:"key_len"`
-}
-
-func DefaultScryptConfig() ScryptConfig {
-	return ScryptConfig{N: 1024, R: 1, P: 1, KeyLen: 32}
+func DefaultScryptConfig() entites.ScryptConfig {
+	return entites.ScryptConfig{N: 1024, R: 1, P: 1, KeyLen: 32}
 }
 
 func (s *Service) CheckScrypt(difficulty, nonce uint32, challenge, verifyHash string) bool {

@@ -2,10 +2,11 @@ package hasher
 
 import (
 	"encoding/hex"
+	"fwtt/internal/entites"
 )
 
 type Service struct {
-	scryptConfig ScryptConfig
+	scryptConfig entites.ScryptConfig
 }
 
 func NewService() *Service {
@@ -14,7 +15,7 @@ func NewService() *Service {
 	}
 }
 
-func (s *Service) ScryptConfig() *ScryptConfig {
+func (s *Service) ScryptConfig() *entites.ScryptConfig {
 	return &s.scryptConfig
 }
 
