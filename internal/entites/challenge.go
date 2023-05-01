@@ -1,6 +1,9 @@
 package entites
 
-import "sync"
+import (
+	"sync"
+	"sync/atomic"
+)
 
 type Challenge struct {
 	Challenge  string `db:"challenge"`
@@ -17,6 +20,10 @@ func (c *Challenge) SetHash(hash string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.Hash = hash
+}
+
+func (c *Challenge) IncrementUsage() {
+	atomic.AddUint32(&c.Used, 1)
 }
 
 func (c *Challenge) GetHash() string {

@@ -90,6 +90,7 @@ func (s *Service) loadState() error {
 }
 
 func (s *Service) Stop() {
+	s.log.Info("stopping service")
 	if s.repoValidator == nil {
 		return
 	}
@@ -105,6 +106,7 @@ func (s *Service) Stop() {
 	if err := s.repoValidator.SaveChallenges(challenges); err != nil {
 		s.log.Error("failed to save challenges", err)
 	}
+	s.log.Info("service stopped")
 }
 
 func (s *Service) SetDifficulty(difficulty uint32, algo string) error {
@@ -170,6 +172,7 @@ func (s *Service) VerifyChallenge(nonce uint32, challenge, verifyHash string) bo
 	if !ok { // unknown challenge
 		return false
 	}
+	ch.IncrementUsage()
 	if ch.Used >= ch.MaxAllowed { // challenge already used
 		return false
 	}
@@ -198,7 +201,6 @@ func (s *Service) VerifyChallenge(nonce uint32, challenge, verifyHash string) bo
 			s.challengesMU.Unlock()
 		}
 		ch.SetHash(verifyHash)
-		atomic.AddUint32(&ch.Used, 1)
 		return true
 	}
 	return false
